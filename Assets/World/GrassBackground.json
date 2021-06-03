@@ -1,0 +1,22 @@
+{ "columns":4,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"",
+         "target":"."
+        }
+    },
+ "image":"GrassBackground.png",
+ "imageheight":64,
+ "imagewidth":64,
+ "margin":0,
+ "name":"GrassBackground",
+ "spacing":0,
+ "tilecount":16,
+ "tiledversion":"1.4.3",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":1.4
+}

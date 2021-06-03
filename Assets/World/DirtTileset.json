@@ -1,0 +1,22 @@
+{ "columns":11,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"",
+         "target":"."
+        }
+    },
+ "image":"DirtTileset.png",
+ "imageheight":80,
+ "imagewidth":176,
+ "margin":0,
+ "name":"DirtTileset",
+ "spacing":0,
+ "tilecount":55,
+ "tiledversion":"1.4.3",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":1.4
+}
