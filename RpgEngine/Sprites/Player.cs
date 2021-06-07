@@ -26,8 +26,6 @@ namespace RpgEngine
             this.Speed = speed;
             this.center = new Vector2(this.texture2D.width/FrameDimensions.X/2, this.texture2D.height/FrameDimensions.Y/2);
             this.camera = new Camera2D(new Vector2(CreateRpgEngine.ScreenWidth/2, CreateRpgEngine.ScreenHeight/2), new Vector2(this.position.X + this.center.X, this.position.Y + this.center.Y), 0, CameraZoom);
-            //this.collisionBox = new CollisionBox(new Rectangle(0, 0, (this.texture2D.width/FrameDimensions.X/9)*2, this.texture2D.height/FrameDimensions.Y/6), true);
-            this.collisionBox = new CollisionBox(new Rectangle(0, 0, 10, 7), true);
             this.FrameDimensions = FrameDimensions;
             this.state = State.MOVE;
         }
@@ -40,8 +38,9 @@ namespace RpgEngine
         
         public void UpdateCollisionBox()
         {
-            this.collisionBox.CollisionRect.x = position.X + texture2D.width/FrameDimensions.X/2 - collisionBox.CollisionRect.width/2;
-            this.collisionBox.CollisionRect.y = position.Y + ((this.texture2D.height/FrameDimensions.Y/3) * 1.8f);
+            // this.collisionBox.CollisionRect.x = position.X + texture2D.width/FrameDimensions.X/2 - collisionBox.CollisionRect.width/2;
+            // this.collisionBox.CollisionRect.y = position.Y + ((this.texture2D.height/FrameDimensions.Y/3) * 1.8f);
+            CreateRpgEngine.updatePlayerCollisionBox(ref collisionBox, position);
         }
 
         public void Draw()

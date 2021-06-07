@@ -42,6 +42,7 @@ namespace RpgGameRaylib
             //--------------------------------------------------------------------------------------------------------
             Tilemap tilemap = Tilemap.LoadTilemap("Assets/World1.tmx");
             Player henry = new Player(LoadTexture("Assets/Player/Player1.png"), new Vector2(0), new Vector2(60, 1), 100f, 2f);
+            henry.collisionBox = new CollisionBox(new Rectangle(0, 0, 10, 7), true);
             henry.animation = new AnimationManager(henry.texture2D, new Vector2(60, 1));
             henry.input = new Input() 
             { 
@@ -85,7 +86,9 @@ namespace RpgGameRaylib
                    animationName == "RollDown" || animationName == "RollRight")
                 henry.state = State.MOVE;
             };
+
             manageProperties = new ManageProperties(_ManageProperties);
+            updatePlayerCollisionBox = new UpdatePlayerCollisionBox(_UpdatePlayerCollisionBox);
             //--------------------------------------------------------------------------------------------------------
 
             // Game Loop
@@ -131,14 +134,15 @@ namespace RpgGameRaylib
                             tilemap.Draw(new Vector2(henry.center.X + henry.position.X, henry.center.Y + henry.position.Y));
 
                             //draw hitbox
-                            //DrawRectangle((int)henry.collisionBox.CollisionRect.x, (int)henry.collisionBox.CollisionRect.y, (int)henry.collisionBox.CollisionRect.width, (int)henry.collisionBox.CollisionRect.height, Color.MAGENTA);
+                            DrawRectangle((int)henry.collisionBox.CollisionRect.x, (int)henry.collisionBox.CollisionRect.y, (int)henry.collisionBox.CollisionRect.width, (int)henry.collisionBox.CollisionRect.height, Color.MAGENTA);
 
                             henry.Draw();
 
                             //draw collision boxes
-                            //foreach (var i in CollisionManager.collisionBoxes)
-                            //    DrawRectangle((int)i.x, (int)i.y, (int)i.width, (int)i.height, Color.WHITE);                    
+                            // foreach (var i in CollisionManager.collisionBoxes)
+                            //    DrawRectangle((int)i.CollisionRect.x, (int)i.CollisionRect.y, (int)i.CollisionRect.width, (int)i.CollisionRect.height, Color.WHITE);  
 
+           
                         EndMode2D();
                     
                     //DrawText(rollTimer+"", 10, 50, 5, Color.MAGENTA);
@@ -297,6 +301,12 @@ namespace RpgGameRaylib
                 if ((bool)props.value == true) ObjectManager.ObjectsList.Add(
                     new Grass(new CollisionBox(new Rectangle((c.Position.X + x) * tilesetToDraw.tilewidth, (c.Position.Y + y) * tilesetToDraw.tileheight, tilesetToDraw.tilewidth, tilesetToDraw.tileheight), true), layers.IndexOf(l), l.Chunks.IndexOf(c), (x + y * (int)c.Dimensions.X))
                     );
+        }
+
+        private void _UpdatePlayerCollisionBox(ref CollisionBox collisionBox, Vector2 position)
+        {
+            collisionBox.CollisionRect.x = position.X + 27;
+            collisionBox.CollisionRect.y = position.Y + 37;
         }
     }
 }
