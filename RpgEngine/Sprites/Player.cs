@@ -4,7 +4,7 @@ using static Raylib_cs.Raylib;
 
 namespace RpgEngine
 {
-    class Player : Sprite
+    public class Player : Sprite
     {
         public State state;
         public Directions direction;
