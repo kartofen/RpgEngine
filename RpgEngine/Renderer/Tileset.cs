@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Raylib_cs;
+using RpgEngine.Sprites;
 using static Raylib_cs.Raylib;
 
-namespace RpgEngine
+namespace RpgEngine.Renderer
 {
     public class Tileset : Sprite
     {

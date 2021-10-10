@@ -6,19 +6,20 @@ using System.Numerics;
 using System.Xml;
 using Newtonsoft.Json;
 using Raylib_cs;
+using RpgEngine.Managers;
 using static Raylib_cs.Raylib;
 
 
-namespace RpgEngine
+namespace RpgEngine.Renderer
 {
     public class Tilemap
     {
         public Dictionary<int, Tileset> Tilesets = new Dictionary<int, Tileset>();
         public List<Layer> layers = new List<Layer>();
-        public int Width;
-        public int Height;
-        public int TileWidth;
-        public int TileHeight;
+        readonly int Width;
+        readonly int Height;
+        readonly int TileWidth;
+        readonly int TileHeight;
         
         public Tilemap() { }
         public Tilemap(Dictionary<int, Tileset> dict, int height, int width, int tileHeight, int tileWidth, List<Layer> layers)
@@ -102,7 +103,9 @@ namespace RpgEngine
             {
                 //get chunks to draw
                 List<Chunk> ChunksToDraw = new List<Chunk>();
+                // chunk where the player is
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X,                  positionInChunk.Y                 )));
+                // 8 chunks around the player
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + o.Dimensions.X, positionInChunk.Y + o.Dimensions.Y)));
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - o.Dimensions.X, positionInChunk.Y - o.Dimensions.Y)));
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + o.Dimensions.X, positionInChunk.Y - o.Dimensions.Y)));
@@ -111,6 +114,16 @@ namespace RpgEngine
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - o.Dimensions.X, positionInChunk.Y                 )));
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X,                  positionInChunk.Y + o.Dimensions.Y)));
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X,                  positionInChunk.Y - o.Dimensions.Y)));
+
+                // two more edges on the sides, because screen is wide
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + 2*o.Dimensions.X, positionInChunk.Y                 )));
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - 2*o.Dimensions.X, positionInChunk.Y                 )));
+
+                // 4 more corners, because screen is wide
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + 2*o.Dimensions.X, positionInChunk.Y + o.Dimensions.Y)));
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - 2*o.Dimensions.X, positionInChunk.Y - o.Dimensions.Y)));
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + 2*o.Dimensions.X, positionInChunk.Y - o.Dimensions.Y)));
+                ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - 2*o.Dimensions.X, positionInChunk.Y + o.Dimensions.Y)));
 
                 //draw chunks
                 foreach(Chunk c in ChunksToDraw)
@@ -138,7 +151,7 @@ namespace RpgEngine
                                     List<Tileset.TileProperties> tileProperties = tilesetToDraw.tileProperties[LocalTileIndexToDraw]; 
                                     foreach(var props in tileProperties)
                                     {
-                                        CreateRpgEngine.manageProperties(l, c, y, x, tilesetToDraw, props, layers);
+                                        CreateRpgEngine.manageTileProperties(l, c, y, x, tilesetToDraw, props, layers);
                                     }
                                 }
                             }
@@ -148,33 +161,41 @@ namespace RpgEngine
             }
         }
 
-
-
-        public void Update()
+        public Vector2 GetTilePosition(int indexOfLayer, int indexOfChunk, int indexInChunk)
         {
-            Object.OnRemoveProperty += (string propertyName, int tilesetToDrawIndex, int tileIndex) =>
-            {
-                // get the properies of the tile and change it
-                Tileset tileset = Tilesets[tilesetToDrawIndex];
-                List<Tileset.TileProperties> tilePropertiesList = tileset.tileProperties[tileIndex];
-                Tileset.TileProperties tileProperties = tilePropertiesList.FirstOrDefault(c => c.name == propertyName);
-                int indexOfTileProperties = tilePropertiesList.IndexOf(tileProperties);
-
-                //chage the property value
-                tileProperties.value = false;
-
-                // save the changed properties
-                tilePropertiesList[indexOfTileProperties] = tileProperties;
-                tileset.tileProperties[tileIndex] = tilePropertiesList;
-                Tilesets[tilesetToDrawIndex] = tileset;
-
-            };
-
-            Object.OnRemoveTile += (int indexOfLayer, int indexOfChunk, int indexInChunk) => 
-            {
-                layers[indexOfLayer].Chunks[indexOfChunk].Data[indexInChunk] = 0;
-            };
+            // get the chunk position and turn the index into x and y and the multiply with 16 to make it to pixles
+            Vector2 tilePos = new Vector2((layers[indexOfLayer].Chunks[indexOfChunk].Position.X + indexInChunk%16)*16, 
+                                          (layers[indexOfLayer].Chunks[indexOfChunk].Position.Y + (int)(indexInChunk/16))*16);
+            return tilePos; // in pixels
         }
+
+        public void SetTile(int indexOfLayer, int indexOfChunk, int indexInChunk, int newTileIndex)
+        {
+            layers[indexOfLayer].Chunks[indexOfChunk].Data[indexInChunk] = newTileIndex;
+        }
+
+        public void RemoveTileProperty(string propertyName, int tilesetToDrawIndex, int tileIndex)
+        {
+            // get the properies of the tile and change it
+            Tileset tileset = Tilesets[tilesetToDrawIndex];
+            List<Tileset.TileProperties> tilePropertiesList = tileset.tileProperties[tileIndex];
+            Tileset.TileProperties tileProperties = tilePropertiesList.FirstOrDefault(c => c.name == propertyName);
+            int indexOfTileProperties = tilePropertiesList.IndexOf(tileProperties);
+
+            //chage the property value
+            tileProperties.value = false;
+
+            // save the changed properties
+            tilePropertiesList[indexOfTileProperties] = tileProperties;
+            tileset.tileProperties[tileIndex] = tilePropertiesList;
+            Tilesets[tilesetToDrawIndex] = tileset;
+        }
+
+        public void RemoveTile(int indexOfLayer, int indexOfChunk, int indexInChunk)
+        {
+            layers[indexOfLayer].Chunks[indexOfChunk].Data[indexInChunk] = 0;
+        }
+        
 
         public struct Chunk 
         {

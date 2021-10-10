@@ -4,13 +4,12 @@ using Raylib_cs;
 using System.Linq;
 using static Raylib_cs.Raylib;
 
-namespace RpgEngine
+namespace RpgEngine.Managers
 {
     public class AnimationManager
     {
         public Rectangle FrameRect;
         public List<Animation> animations;
-        //private int currentIndex;
         private int frameCounter;
         public int OneTextureWidth;
         public int OneTextureHeight;
@@ -18,7 +17,7 @@ namespace RpgEngine
         public delegate void AnimationFinished(string animationName);
         public event AnimationFinished OnAnimationFinished;
 
-        public AnimationManager(Texture2D texture, Vector2 frameDimentions, int frameSpeed = 1)
+        public AnimationManager(Texture2D texture, Vector2 frameDimentions)
         {
             this.animations = new List<Animation>();
             this.OneTextureWidth = texture.width/(int)frameDimentions.X;

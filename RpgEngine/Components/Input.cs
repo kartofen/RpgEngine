@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace RpgEngine
+namespace RpgEngine.Componets
 {
     public class Input 
     {

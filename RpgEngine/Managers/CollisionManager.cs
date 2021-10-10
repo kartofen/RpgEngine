@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
-namespace RpgEngine
+namespace RpgEngine.Managers
 {
     public static class CollisionManager
     {

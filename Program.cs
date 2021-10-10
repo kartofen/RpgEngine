@@ -2,8 +2,8 @@
 {    
     static class Program
     {       
-        public static int ScreenHeight = 600;
-        public static int ScreenWidth = 970;
+        public static int ScreenHeight = 720;
+        public static int ScreenWidth = 1280;
 
         public static void Main()
         {
