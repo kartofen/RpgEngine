@@ -10,6 +10,13 @@ using RpgEngine.Managers;
 using RpgGameRaylib.Components;
 using RpgGameRaylib.Entities;
 
+/**
+ * TODO: draw the entities and objects when it draws the tiles, not over all of them
+ *       change manageTileProperties so its easier to write and read the code when adding an entity
+ *       add entity loading from the tilemap with the entitylayer in the tilemap
+ *       ? optimize the game
+ */
+
 namespace RpgGameRaylib
 {
     class Game : CreateRpgEngine
@@ -26,7 +33,7 @@ namespace RpgGameRaylib
 
             // Initialize
             //------------------------------------------------------------------------------------------------------------
-            Tilemap tilemap = Tilemap.LoadTilemap("Assets/World1.tmx");
+            //PLAYER
             Player henry = new Player(LoadTexture("Assets/Player/Player1.png"), new Vector2(0), new Vector2(60, 1), 100f, 2f)
             {
                 collisionBox = new CollisionBox(new Rectangle(0, 0, 10, 7), true),
@@ -40,7 +47,6 @@ namespace RpgGameRaylib
                     Roll = KeyboardKey.KEY_LEFT_SHIFT 
                 }
             };
-
             // Create Animations
             henry.animation.CreateAnimation(new int[] { 6  }, "IdleUp"   , 8);
             henry.animation.CreateAnimation(new int[] { 12 }, "IdleLeft" , 8);
@@ -58,7 +64,6 @@ namespace RpgGameRaylib
             henry.animation.CreateAnimation(new int[] { 50, 51, 52, 53, 54 }, "RollLeft" , 8);
             henry.animation.CreateAnimation(new int[] { 55, 56, 57, 58, 59 }, "RollDown" , 8);
             henry.animation.CreateAnimation(new int[] { 40, 41, 42, 43, 44 }, "RollRight", 8);
-
             //Change state when attack and roll animations are finished
             henry.animation.OnAnimationFinished += (string animationName) => 
             {
@@ -70,23 +75,29 @@ namespace RpgGameRaylib
                    animationName == "RollDown" || animationName == "RollRight")
                 henry.psm.state = State.MOVE;
             };
-
-            // manage the properties of the tiles
-            manageTileProperties = new ManageTileProperties((Tilemap.Layer l, Tilemap.Chunk c, int y, int x, Tileset tilesetToDraw, Tileset.TileProperties props, List<Tilemap.Layer> layers) => 
-            {
-                if (props.name == "collide" && props.type == "bool")
-                    if ((bool)props.value == true) CollisionManager.collisionBoxes.Add(
-                        new CollisionBox(new Rectangle((c.Position.X + x) * tilesetToDraw.tilewidth, (c.Position.Y + y) * tilesetToDraw.tileheight, tilesetToDraw.tilewidth, tilesetToDraw.tileheight), true)
-                    );
-
-                if (props.name == Grass.Name && props.type == "bool")
-                    if ((bool)props.value == true) ObjectManager.ObjectsList.Add(
-                        new Grass(new CollisionBox(new Rectangle((c.Position.X + x) * tilesetToDraw.tilewidth, (c.Position.Y + y) * tilesetToDraw.tileheight, tilesetToDraw.tilewidth, tilesetToDraw.tileheight), true), layers.IndexOf(l), l.Chunks.IndexOf(c), (x + y * (int)c.Dimensions.X))
-                    );
-            });
-
             // add the player as an entity
             EntityManager.Entities.Add(henry);
+
+            // TILEMAP
+            Tilemap tilemap = Tilemap.LoadTilemap("Assets/World1.tmx");
+            // manage the properties of the tiles
+            tilemap.manageTileProperties = new Tilemap.ManageTileProperties((Tilemap.Layer l, Tilemap.Chunk c, int y, int x, Tileset tilesetToDraw, Tileset.TileProperties props, List<Tilemap.Layer> layers) => 
+            {
+                if (props.name == "collide" && props.type == "bool")
+                    if ((bool)props.value == true) ObjectManager.Objects.Add(
+                        new Cliff(layers.IndexOf(l), l.Chunks.IndexOf(c), (x + y * (int)c.Dimensions.X), new CollisionBox(new Rectangle((c.Position.X + x) * tilesetToDraw.tilewidth, (c.Position.Y + y) * tilesetToDraw.tileheight, tilesetToDraw.tilewidth, tilesetToDraw.tileheight), true))
+                    );
+
+                if (props.name == "grass" && props.type == "bool")
+                    if ((bool)props.value == true) ObjectManager.Objects.Add(
+                        new Grass(new CollisionBox(new Rectangle((c.Position.X + x) * tilesetToDraw.tilewidth, (c.Position.Y + y) * tilesetToDraw.tileheight, tilesetToDraw.tilewidth, tilesetToDraw.tileheight), true), layers.IndexOf(l), l.Chunks.IndexOf(c), (x + y * (int)c.Dimensions.X))
+                    );
+
+                //if (props.name == "bush" && props.type == "bool")
+                //    if ((bool)props.value == true) ObjectManager.Objects.Add(
+                //        new Bush(layers.IndexOf(l), l.Chunks.IndexOf(c), (x + y * (int)c.Dimensions.X))
+                //    );
+            });
             //------------------------------------------------------------------------------------------------------------
 
             // Game Loop
@@ -108,7 +119,10 @@ namespace RpgGameRaylib
 
                         BeginMode2D(henry.camera);
 
+                            // the tilemap draw the objects and entitites too
                             tilemap.Draw(new Vector2(henry.center.X + henry.position.X, henry.center.Y + henry.position.Y));
+
+                            //DrawRectangle((int)henry.position.X, (int)henry.position.Y, 1, 1, Color.MAGENTA);
 
                             //draw hitbox
                             //DrawRectangle((int)henry.collisionBox.CollisionRect.x, (int)henry.collisionBox.CollisionRect.y, (int)henry.collisionBox.CollisionRect.width, (int)henry.collisionBox.CollisionRect.height, Color.MAGENTA);

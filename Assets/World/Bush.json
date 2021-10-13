@@ -1,12 +1,4 @@
 { "columns":2,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"",
-         "target":"."
-        }
-    },
  "image":"Bush.png",
  "imageheight":32,
  "imagewidth":32,
@@ -14,9 +6,46 @@
  "name":"Bush",
  "spacing":0,
  "tilecount":4,
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.2",
  "tileheight":16,
+ "tiles":[
+        {
+         "id":0,
+         "properties":[
+                {
+                 "name":"bush",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":1,
+         "properties":[
+                {
+                 "name":"bush",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":2,
+         "properties":[
+                {
+                 "name":"bush",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":3,
+         "properties":[
+                {
+                 "name":"bush",
+                 "type":"bool",
+                 "value":true
+                }]
+        }],
  "tilewidth":16,
  "type":"tileset",
- "version":1.4
+ "version":"1.6"
 }

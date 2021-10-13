@@ -12,7 +12,6 @@ namespace RpgGameRaylib.Entities
 {
     public class Grass : IObject
     {
-        public static readonly string Name = "grass";
         public CollisionBox HurtBox;
         private readonly int IndexOfLayer;
         private readonly int IndexOfChunk;
@@ -20,10 +19,10 @@ namespace RpgGameRaylib.Entities
         private Sprite sprite;
         AnimationManager animation;
         private bool AnimationStarted = false;
-        private Vector2 position; // in pixels
 
         public Grass(CollisionBox collisionBox, int indexOfLayer, int indexOfChunk, int indexInChunk)
         {
+            Name = "grass";
             HurtBox = collisionBox;
             IndexOfLayer = indexOfLayer;
             IndexOfChunk = indexOfChunk;
@@ -41,9 +40,10 @@ namespace RpgGameRaylib.Entities
             if(CollisionManager.ChechCollisionWithHitBoxes(HurtBox) && !AnimationStarted)
             {
                 tilemap.RemoveTile(IndexOfLayer, IndexOfChunk, IndexInChunk);
-                // get position of the tile
-                position = tilemap.GetTilePosition(IndexOfLayer, IndexOfChunk, IndexInChunk);
-                
+
+                    // get position of the tile
+                    position = tilemap.GetTilePosition(IndexOfLayer, IndexOfChunk, IndexInChunk);
+
                 // create animation and sprite
                 sprite = new Sprite(LoadTexture("Assets/Effects/GrassEffect.png"));
                 animation = new AnimationManager(sprite.texture2D, new Vector2(5, 1));

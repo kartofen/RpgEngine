@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Xml;
-using Newtonsoft.Json;
 using Raylib_cs;
 using RpgEngine.Managers;
+using RpgEngine.Entities;
 using static Raylib_cs.Raylib;
 
 
@@ -99,8 +98,10 @@ namespace RpgEngine.Renderer
                 (int)(((int)(position.Y)/TileHeight)/layers[0].Chunks[0].Dimensions.Y)*layers[0].Chunks[0].Dimensions.Y
             );
 
-            foreach(Layer l in this.layers)
+            for(int i = 0; i < this.layers.Count; i ++)
             {
+                Layer l = layers[i];
+
                 //get chunks to draw
                 List<Chunk> ChunksToDraw = new List<Chunk>();
                 // chunk where the player is
@@ -125,6 +126,50 @@ namespace RpgEngine.Renderer
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X + 2*o.Dimensions.X, positionInChunk.Y - o.Dimensions.Y)));
                 ChunksToDraw.Add(l.Chunks.FirstOrDefault(o => o.Position == new Vector2(positionInChunk.X - 2*o.Dimensions.X, positionInChunk.Y + o.Dimensions.Y)));
 
+                // // Lists to store the entites to draw and them remove from them those in the remove lists
+                // // all of this so i draw every object and entity once
+                // List<IEntity> EntitiesToDraw = new List<IEntity>();
+                // foreach(var ent in EntityManager.Entities)
+                // {
+                //     EntitiesToDraw.Add(ent);
+                // }
+                // List<IEntity> EntitiesToRemove = new List<IEntity>();
+                // List<IObject> ObjectsToDraw = new List<IObject>();
+                // foreach (var obj in ObjectManager.Objects)
+                // {
+                //     ObjectsToDraw.Add(obj);
+                // }
+                // List<IObject> ObjectsToRemove = new List<IObject>();
+
+                //                                 // if(i == 3)
+                //                     // {
+                //                     //     //draw objects if they are within the tile
+                //                     //     foreach(var obj in ObjectsToDraw)
+                //                     //         if(obj.position.Y)
+                //                     //         {
+                //                     //             obj.Draw();
+                //                     //             ObjectsToRemove.Add(obj);
+                //                     //         }
+                //                     //     // remove the drawn objects from the list so we draw every object once
+                //                     //     foreach(var obj in ObjectsToRemove)
+                //                     //         ObjectsToDraw.Remove(obj);
+                //                     //     ObjectsToRemove.Clear(); // Clear the list, every loop we got new objects to remove
+
+
+                //                     //     //draw entities if they are within the tile
+                //                     //     foreach(var ent in EntitiesToDraw)
+                //                     //         if(CheckCollisionRecs(ent.collisionBox.CollisionRect, TileRec))
+                //                     //         {
+                //                     //             ent.Draw();
+                //                     //             EntitiesToRemove.Add(ent);
+                //                     //         }
+                //                     //     // remove the drawn entities from the list so we draw every entity once
+                //                     //     foreach(var ent in EntitiesToRemove)
+                //                     //         EntitiesToDraw.Remove(ent);
+                //                     //     EntitiesToRemove.Clear(); // Clear the list, every loop we got new entities to remove
+                //                     // }
+
+
                 //draw chunks
                 foreach(Chunk c in ChunksToDraw)
                 {
@@ -141,9 +186,49 @@ namespace RpgEngine.Renderer
                                     Tileset tilesetToDraw = Tilesets[k];
                                     int LocalTileIndexToDraw = c.Data[x + y*(int)c.Dimensions.X] - k;
 
-                                    //draw tile
-                                    DrawTextureRec(tilesetToDraw.texture2D, tilesetToDraw.ReturnRect(LocalTileIndexToDraw), new Vector2((c.Position.X+x)*TileWidth, (c.Position.Y+y)*TileHeight), Color.WHITE);
+                                    Vector2 TilePos = new Vector2((c.Position.X+x)*TileWidth, (c.Position.Y+y)*TileHeight);
+                                    Rectangle TileRec = new Rectangle(TilePos.X, TilePos.Y, TileWidth, TileHeight);
 
+                                    // if texture is on the first 2 layers (background)
+                                    // if(i < 2)
+                                        //draw tile
+                                        DrawTextureRec(tilesetToDraw.texture2D, tilesetToDraw.ReturnRect(LocalTileIndexToDraw), TilePos, Color.WHITE);
+                                    // // if texture is object
+                                    // else if(i == 2)
+                                    // {
+                                    //     List<Tileset.TileProperties> tileProperties = tilesetToDraw.tileProperties[LocalTileIndexToDraw]; 
+                                    //     foreach(var props in tileProperties)
+                                    //     {
+                                    //         manageTileProperties(l, c, y, x, tilesetToDraw, props, layers);
+                                    //     }                  
+
+                                    //     foreach(var ent in EntityManager.Entities)
+                                    //     {
+                                    //         // first draw, because if there is no collisoin with objects then the enitity wont be drawn
+                                    //         // gotta optimize that because too much drawing
+
+
+                                    //         Rectangle entityRec = new Rectangle(ent.position.X, ent.position.Y, 
+                                    //                                             ent.sprite.texture2D.width/ent.FrameDimensions.X, 
+                                    //                                             ent.sprite.texture2D.height/ent.FrameDimensions.Y );
+                                    //         if(CheckCollisionRecs(entityRec, TileRec))
+                                    //         {
+                                    //             if(TileRec.y - 1 > TileRec.y)
+                                    //             {
+                                    //                 DrawTextureRec(tilesetToDraw.texture2D, tilesetToDraw.ReturnRect(LocalTileIndexToDraw), TilePos, Color.WHITE);
+                                    //                 //ent.Draw();
+                                    //                 //entDrawn = true;
+                                    //             }
+                                    //             else 
+                                    //             {
+                                    //                 ent.Draw();
+                                    //                 DrawTextureRec(tilesetToDraw.texture2D, tilesetToDraw.ReturnRect(LocalTileIndexToDraw), TilePos, Color.WHITE);
+                                    //             }
+                                    //         }
+                                    //     }
+                                    // }
+                                    
+                                    
                                     //check is tileproperties is empty
                                     if(tilesetToDraw.tileProperties.Count <= 0)
                                         continue;
@@ -151,8 +236,8 @@ namespace RpgEngine.Renderer
                                     List<Tileset.TileProperties> tileProperties = tilesetToDraw.tileProperties[LocalTileIndexToDraw]; 
                                     foreach(var props in tileProperties)
                                     {
-                                        CreateRpgEngine.manageTileProperties(l, c, y, x, tilesetToDraw, props, layers);
-                                    }
+                                        manageTileProperties(l, c, y, x, tilesetToDraw, props, layers);
+                                    }       
                                 }
                             }
                         }
@@ -160,6 +245,10 @@ namespace RpgEngine.Renderer
                 }
             }
         }
+
+        // function pointer to manager the properties of tiles in the draw function
+        public delegate void ManageTileProperties(Layer l, Chunk c, int y, int x, Tileset tilesetToDraw, Tileset.TileProperties props, List<Layer> layers);
+        public ManageTileProperties manageTileProperties { get; set; }
 
         public Vector2 GetTilePosition(int indexOfLayer, int indexOfChunk, int indexInChunk)
         {

@@ -9,6 +9,7 @@ namespace RpgEngine.Entities
         public Sprite sprite;
         public Vector2 position;
         public Vector2 center;
+        public Vector2 FrameDimensions;
         public CollisionBox collisionBox;
 
         public abstract void Update();

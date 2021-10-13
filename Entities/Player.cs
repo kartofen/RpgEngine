@@ -18,7 +18,6 @@ namespace RpgGameRaylib.Entities
         public AnimationManager animation;
         public float Speed;
         public bool isMoving = false;
-        public Vector2 FrameDimensions;
 
         public Player(Texture2D texture, Vector2 pos, Vector2 FrameDimensions, float speed = 1, float CameraZoom = 1)
         {

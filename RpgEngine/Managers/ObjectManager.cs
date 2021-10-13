@@ -6,23 +6,23 @@ namespace RpgEngine.Managers
 {
     public static class ObjectManager
     {
-        public static List<IObject> ObjectsList = new List<IObject>();
+        public static List<IObject> Objects = new List<IObject>();
 
         public static void Update(ref Tilemap tilemap)
         {
-            foreach (var obj in ObjectsList)
+            foreach (var obj in Objects)
                 obj.Update(ref tilemap);
         }
 
         public static void Unload()
         {
-            foreach (var obj in ObjectsList)
+            foreach (var obj in Objects)
                 obj.Unload();
         }
 
         public static void Draw()
         {
-            foreach (var obj in ObjectsList)
+            foreach (var obj in Objects)
                 obj.Draw(); 
         }
 
@@ -33,11 +33,11 @@ namespace RpgEngine.Managers
 
             List<IObject> objectsToRemove = new List<IObject>();
 
-            foreach (var obj in ObjectsList)
+            foreach (var obj in Objects)
                 if(obj.ShouldRemove) objectsToRemove.Add(obj);
 
             foreach (var obj in objectsToRemove)
-                ObjectsList.Remove(obj);
+                Objects.Remove(obj);
             
             objectsToRemove.Clear();
         }
